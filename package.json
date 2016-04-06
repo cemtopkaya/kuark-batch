@@ -1,6 +1,6 @@
 {
   "name": "kuark-batch",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Kuark application's batch",
   "main": "index.js",
   "directories": {
@@ -46,7 +46,7 @@
     "publish": "",
     "postpublish": "",
     "_______________________________________________________________ UPDATE KUARK PACKAGES": "__________",
-    "update:all": "npm run update-kuark-api && npm run update-kuark-batch && npm run update-kuark-app",
+    "update:all": "npm run update-kuark-api && npm run update-kuark-app",
     "update-kuark-app": "ncu /^kuark-/ -u --packageFile ../../App/package.json && cd ../../App && npm update kuark-batch",
     "update-kuark-api": "ncu /^kuark-/ -u --packageFile ../kuark-api/package.json && cd ../kuark-api && npm update kuark-batch"
   },
@@ -69,6 +69,10 @@
     "mssql": "3.1.2",
     "node-uuid": "1.4.7",
     "q": "1.4.1",
-    "redis": "2.5.3"
+    "redis": "2.5.3",
+    "tabletojson": "latest",
+    "kuark-db": "0.0.4",
+    "kuark-istisna": "0.0.7",
+    "kuark-schema": "0.0.7"
   }
 }
