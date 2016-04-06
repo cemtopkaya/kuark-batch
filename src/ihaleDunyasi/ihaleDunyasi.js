@@ -1,11 +1,15 @@
-'use strict'
+'use strict';
 
-var $ = require('cheerio'),
+var mysql = require('mysql'),
+    $ = require('cheerio'),
+    /** @type {DBModel} */
     db = require('kuark-db')(),
     redis = db.redis,
+    elastic = db.elastic,
     tabletojson = require('tabletojson'),
     exception = require("kuark-istisna"),
     schema = require('kuark-schema');
+
 
 /** @type {IhaleDunyasi} */
 function ihaleDunyasi() {
@@ -17,15 +21,10 @@ function ihaleDunyasi() {
      * Redise kaydet
      * */
 
-    /**
-     *
-     * @type {IhaleDunyasi}
-     */
+    /** @type {IhaleDunyasi} */
     var result = {};
 
     function f_ihaleDunyasinaBaglan() {
-
-        var mysql = require('mysql');
 
         var connection = mysql.createConnection({
             //host: 'ihaledunyasi.net',
@@ -59,7 +58,7 @@ function ihaleDunyasi() {
      * @param {function} _errFn
      */
     function f_ihaleDunyasindanCek(_ihale_id, _topX, _successFn, _errFn) {
-       console.log("ihale dünyasından cekmeden onceki argumanlar: " + JSON.stringify(arguments));
+        console.log("ihale dünyasından cekmeden onceki argumanlar: " + JSON.stringify(arguments));
         // MySql bağlantısı kurulsun
         result.connection = f_ihaleDunyasinaBaglan();
 
@@ -92,9 +91,9 @@ function ihaleDunyasi() {
         // İndeksi silip cache'i boşaltalım. Sıfır başlangıç için.
         elastic.client.indices.clearCache();
         elastic.client.indices.flush();
-        elastic.client.indices.delete({index: SABIT.ELASTIC.INDEKS.APP}, function (err, resp, respcode) {
+        elastic.client.indices.delete({index: elastic.SABIT.INDEKS.APP}, function (err, resp, respcode) {
             elastic.client.indices.create({
-                index: SABIT.ELASTIC.INDEKS.APP,
+                index: elastic.SABIT.INDEKS.APP,
                 body: {
                     "mappings": {
                         "urun": {
@@ -304,6 +303,7 @@ function ihaleDunyasi() {
 
     return result;
 }
+
 /** @type {IhaleDunyasi} */
 var obj = ihaleDunyasi();
 module.exports = obj;
