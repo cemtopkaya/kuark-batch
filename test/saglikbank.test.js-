@@ -1,0 +1,13 @@
+/**
+ * Created by duygu.akmaz on 15.12.2014.
+
+ var check = require('validator').check;
+ var sanitize = require('validator');
+ var username = '<div>ahmet</div>';
+ var a = sanitize.escape(username);
+ console.log(a);
+ */
+
+/*
+ var sb = require('./saglikbank');
+ sb.f_SB_Cek(1);*/

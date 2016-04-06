@@ -1,0 +1,15 @@
+{
+  "name": "table-to-json",
+  "homepage": "https://github.com/lightswitch05/table-to-json",
+  "version": "0.11.0",
+  "_release": "0.11.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.11.0",
+    "commit": "c5e5c2b4e5b496949d6d31cace8b95e58de1ab99"
+  },
+  "_source": "git://github.com/lightswitch05/table-to-json.git",
+  "_target": "~0.11.0",
+  "_originalSource": "table-to-json",
+  "_direct": true
+}
