@@ -1,19 +1,29 @@
+'use strict'
+
+var $ = require('cheerio'),
+    db = require('kuark-db')(),
+    redis = db.redis,
+    tabletojson = require('tabletojson'),
+    exception = require("kuark-istisna"),
+    schema = require('kuark-schema');
+
+/** @type {IhaleDunyasi} */
 function ihaleDunyasi() {
-    var http = require('http'),
-        $ = require('cheerio'),
-        db = require('../../server/db')(),
-        redis = db.redis,
-        tabletojson = require('tabletojson'),
-        exception = require("../../istisna"),
-        schema = require('kuark-schema');
+
+    /*
+     * Ihale dünyasından son çekilmiş ihale_id yi redisten çeki
+     * mysql kayıtlarından ihale_id den sonraki X ihaleyi çek
+     * Redise uygun nesneyi oluştur
+     * Redise kaydet
+     * */
 
     /**
      *
-     * @type {DBIhaleDunyasi}
+     * @type {IhaleDunyasi}
      */
     var result = {};
 
-    var f_ihaleDunyasinaBaglan = function () {
+    function f_ihaleDunyasinaBaglan() {
 
         var mysql = require('mysql');
 
@@ -39,7 +49,7 @@ function ihaleDunyasi() {
         });
 
         return connection;
-    };
+    }
 
     /**
      * ihale_id den sonraki son X ihaleyi çek
@@ -48,8 +58,8 @@ function ihaleDunyasi() {
      * @param {function} _successFn
      * @param {function} _errFn
      */
-    var f_ihaleDunyasindanCek = function (_ihale_id, _topX, _successFn, _errFn) {
-        l.i("ihale dünyasından cekmeden onceki argumanlar: " + JSON.stringify(arguments));
+    function f_ihaleDunyasindanCek(_ihale_id, _topX, _successFn, _errFn) {
+       console.log("ihale dünyasından cekmeden onceki argumanlar: " + JSON.stringify(arguments));
         // MySql bağlantısı kurulsun
         result.connection = f_ihaleDunyasinaBaglan();
 
@@ -76,15 +86,9 @@ function ihaleDunyasi() {
                 _successFn(rows);
             }
         });
-    };
-    /*
-     * Ihale dünyasından son çekilmiş ihale_id yi redisten çeki
-     * mysql kayıtlarından ihale_id den sonraki X ihaleyi çek
-     * Redise uygun nesneyi oluştur
-     * Redise kaydet
-     * */
+    }
 
-    var f_ElasticTemizle = function () {
+    function f_ElasticTemizle() {
         // İndeksi silip cache'i boşaltalım. Sıfır başlangıç için.
         elastic.client.indices.clearCache();
         elastic.client.indices.flush();
@@ -120,25 +124,24 @@ function ihaleDunyasi() {
                 console.log(err, resp, respcode);
             });
         });
-    };
+    }
 
-    var f_ihaleRedisteVarmi = function (_ihaleDunyasi_id) {
+    function f_ihaleRedisteVarmi(_ihaleDunyasi_id) {
         return redis.dbQ.hexists(redis.kp.ihale.ihaleDunyasi.tablo, _ihaleDunyasi_id);
-    };
+    }
 
     /**
      * İhale dünyasından gelen ihale id yi sisteme ekliyoruz ki o id den sonraki kayıtları çekebilelim.
      * @param _ihaleDunyasi_id
      * @returns {*}
      */
-    var f_ihaleIdsiniKaydet = function (_ihaleDunyasi_id) {
+    function f_ihaleIdsiniKaydet(_ihaleDunyasi_id) {
         return redis.dbQ.set(redis.kp.ihale.ihaleDunyasi.idx, parseInt(_ihaleDunyasi_id));
-    };
+    }
 
-    var f_sonIhaleIdsiniCek = function () {
+    function f_sonIhaleIdsiniCek() {
         return redis.dbQ.get(redis.kp.ihale.ihaleDunyasi.idx);
-    };
-
+    }
 
     function f_sehir_ekle(_ilAdi) {
         if (_ilAdi) {
@@ -156,7 +159,7 @@ function ihaleDunyasi() {
         }
     }
 
-    var f_ihaleyiRediseKaydet = function (_elm, _sehir, _bolge) {
+    function f_ihaleyiRediseKaydet(_elm, _sehir, _bolge) {
         var listeIhaleDunyasiHtml = _elm.liste.replace(/(\r\n|\n|\r)/gm, "").replace(/(<p>|<\/p>)/gm, ""),
             listeIhaleDunyasiJSON = tabletojson.convert(listeIhaleDunyasiHtml)[0],
             dosyalarIhaleDunyasiHtml = _elm.sartnamesi.replace(/(\r\n|\n|\r)/gm, "").replace(/(<p>|<\/p>)/gm, "").replace(/(<br>|<br\/>)/gm, "");
@@ -228,17 +231,17 @@ function ihaleDunyasi() {
                 return db.ihale.f_db_ihale_ekle_ihaleDunyasindan(es_ihale, db_ihale, 0);
             })
             .fail(function (_err) {
-                l.e(_err);
+                console.log(_err);
                 throw new exception.Istisna("İhale dünyasından kayıtlar çekilen kayıtlar eklenemedi.", "HATA ALINDI:" + _err)
             });
-    };
+    }
 
     /**
      * İhale dünyasından gelen ihale_id sistemde yoksa önce idyi sonra da ona bağlı ihale,kalem,kurum bilgilerini sisteme ekliyoruz
      * @param _elm
      * @returns {*}
      */
-    var f_ihaleDunyasiIhalesiniKaydet = function (_elm) {
+    function f_ihaleDunyasiIhalesiniKaydet(_elm) {
         var defer = redis.dbQ.Q.defer();
         f_ihaleRedisteVarmi(_elm.ihale_id)
             .then(function (_ihaleVarmi) {
@@ -263,9 +266,9 @@ function ihaleDunyasi() {
                 }
             });
         return defer.promise;
-    };
+    }
 
-    var f_ihaleDunyasindanCekRediseEkle = function (_ihale_id, _topX) {
+    function f_ihaleDunyasindanCekRediseEkle(_ihale_id, _topX) {
         //f_ElasticTemizle();
 
         //return redis.dbQ.flushdb()
@@ -290,9 +293,9 @@ function ihaleDunyasi() {
         }
 
         // });
-    };
+    }
 
-    /** @class DBIhaleDunyasi */
+    /** @class IhaleDunyasi */
     result = {
         connection: null,
         f_ihaleDunyasindanCek: f_ihaleDunyasindanCek,
@@ -301,10 +304,6 @@ function ihaleDunyasi() {
 
     return result;
 }
-
-/**
- *
- * @type {DBIhaleDunyasi}
- */
+/** @type {IhaleDunyasi} */
 var obj = ihaleDunyasi();
 module.exports = obj;

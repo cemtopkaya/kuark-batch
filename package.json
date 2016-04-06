@@ -1,6 +1,6 @@
 {
   "name": "kuark-batch",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Kuark application's batch",
   "main": "index.js",
   "directories": {
@@ -30,7 +30,7 @@
     "_______________________________________________________________ VERSION": "__________",
     "preversion": "npm run mocha",
     "version": "git add -A && git commit -m\"Versiyon yapılacak\"",
-    "postversion": "git push && git push --tags && npm publish",
+    "postversion": "git push && git push --tags && npm publish && npm run update:all",
     "version:patch": "npm version patch  -m \" %s Versiyonu yapıldı\" --no-git-tag-version",
     "version:minor": "npm version minor",
     "version:major": "npm version major",
@@ -44,7 +44,11 @@
     "_______________________________________________________________ PUBLISH": "__________",
     "prepublish": "",
     "publish": "",
-    "postpublish": ""
+    "postpublish": "",
+    "_______________________________________________________________ UPDATE KUARK PACKAGES": "__________",
+    "update:all": "npm run update-kuark-api && npm run update-kuark-batch && npm run update-kuark-app",
+    "update-kuark-app": "ncu /^kuark-/ -u --packageFile ../../App/package.json && cd ../../App && npm update kuark-batch",
+    "update-kuark-api": "ncu /^kuark-/ -u --packageFile ../kuark-api/package.json && cd ../kuark-api && npm update kuark-batch"
   },
   "repository": {
     "type": "git",

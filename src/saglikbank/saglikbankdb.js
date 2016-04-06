@@ -1,15 +1,20 @@
+'use strict';
+
+var
+    /** @type {DBModel} */
+    db = require('kuark-db')();
+
+/** @type {SaglikBankDB} */
 function SaglikBankDB() {
 
-    var http = require('http'),
-        Q = require('q'),
-        _ = require('underscore'),
-        result = {};
+    /** @type {SaglikBankDB} */
+    var result = {};
 
     function f_KurumAdindanBul(kurumAdi) {
-        var def_kurum = Q.defer();
-        console.log("f_KurumAdindanBul metodundayım");
+        var def_kurum = db.redis.dbQ.Q.defer();
+
         if (kurumAdi) {
-            result.db.kurum.f_db_kurum_adlari_adi(kurumAdi)
+            db.kurum.f_db_kurum_adlari_adi(kurumAdi)
                 .then(function (_kurum) {
                     console.log("f_db_kurum_adlari_adi: " + _kurum);
                     def_kurum.resolve(_kurum);
@@ -26,17 +31,15 @@ function SaglikBankDB() {
     }
 
     function f_SBIhaleIDdenBul(sb_ihale_id) {
-        var def_ihale = Q.defer();
-        if (sb_ihale_id) {
-            console.log("sbihale_id:" + sb_ihale_id);
+        var def_ihale = db.redis.dbQ.Q.defer();
 
-            result.db.ihale.f_db_ihale_sbihale_id(sb_ihale_id)
+        if (sb_ihale_id) {
+
+            db.ihale.f_db_ihale_sbihale_id(sb_ihale_id)
                 .then(function (_ihale) {
-                    console.log("f_db_ihale_sbihale_id:" + JSON.stringify(_ihale));
                     def_ihale.resolve(_ihale);
                 })
                 .fail(function () {
-                    console.log("tüm ihaleler çekilemedi");
                     def_ihale.reject("tüm ihaleler çekilemedi");
                 });
         } else {
@@ -46,7 +49,7 @@ function SaglikBankDB() {
         return def_ihale.promise;
     }
 
-    result.f_DBIslemleri = function (_ihale) {
+    function f_DBIslemleri(_ihale) {
         /* Ihale var mı?
          Yok -> ekle { ihaleler_eklenen.push(ihale) }
          Var -> Eklenmedi  { ihaleler_eklenmeyen.push(ihale) }
@@ -54,9 +57,7 @@ function SaglikBankDB() {
          Yok -> ekle { kurumlar_eklenen.push(ihale.kurum) }
          Var -> ihale.kurum = db'den gelen Kurum nesnesi
          */
-        var defer = Q.defer();
-
-        console.log("f_KontrolveVTIslemleri işlemlerine başlıyorr");
+        var defer = db.redis.dbQ.Q.defer();
 
         f_KontrolveVTIslemleri(_ihale)
             .then(function (_res) {
@@ -68,12 +69,12 @@ function SaglikBankDB() {
                 defer.reject("f_KontrolveVTIslemleri işlemi başarılamadı..!" + _err);
             });
         return defer.promise;
-    };
+    }
 
-    //function f_KontrolveVTIslemleri(arrKurumlarDB, arrIhalelerDB, _ihale) {
+    // function f_KontrolveVTIslemleri(arrKurumlarDB, arrIhalelerDB, _ihale) {
     function f_KontrolveVTIslemleri(_ihale) {
 
-        var defer = Q.defer();
+        var defer = db.redis.dbQ.Q.defer();
 
         /*
          * DB de ihale varsa, ilgili kurum ve satırlar vardır.
@@ -81,8 +82,7 @@ function SaglikBankDB() {
          */
         // db de var mı?
         console.log("ihale db de var mı?");
-        //var vtIhale = _.where(arrIhalelerDB, {"IhaleTarihi": _ihale.IhaleTarihi, "Konusu": _ihale.Konusu});
-        //var vtIhale = _.where(arrIhalelerDB, {"Konusu": _ihale.Konusu});
+
         f_SBIhaleIDdenBul(_ihale.id)
             .then(function (vtIhale) {
                 return vtIhale
@@ -98,7 +98,7 @@ function SaglikBankDB() {
                     console.log(vtIhale);
                     _ihale.Id = vtIhale.Id;
 
-                    result.db.ihale.f_db_ihale_kalem_tumu(_ihale.Id)
+                    db.ihale.f_db_ihale_kalem_tumu(_ihale.Id)
                         .then(function (_satirlar) {
                             console.log("dönen satırlar:" + _satirlar);
                             if (!_satirlar) {
@@ -143,7 +143,6 @@ function SaglikBankDB() {
                                     defer.resolve(_ihale);
                                 })
                                 .fail(function () {
-                                    console.log("f_Ihaleekle HATA ALINDI.!");
                                     defer.reject("f_Ihaleekle HATA ALINDI.!");
                                 });
                         });
@@ -154,7 +153,8 @@ function SaglikBankDB() {
     }
 
     function f_IhaleEkle(_ihale) {
-        var defer = Q.defer();
+        var defer = db.redis.dbQ.Q.defer();
+
         // Ihale ekle
 
         console.log("f_IhaleEkle metoduna gelen ihale");
@@ -171,7 +171,7 @@ function SaglikBankDB() {
             "SartnameAdres": _ihale.SartnameAdres
         };
 
-        result.db.ihale.f_db_ihale_ekle(sadeceIhaleBilgisi, _ihale.Kurum_Id, 0)
+        db.ihale.f_db_ihale_ekle(sadeceIhaleBilgisi, _ihale.Kurum_Id, 0)
             .then(function (_dbRes) {
                 console.log("ihale başarıyla eklendi.");
                 var yeniIhale = JSON.parse(_dbRes);
@@ -183,24 +183,22 @@ function SaglikBankDB() {
                 defer.reject(_err);
             })
             .then(function (_res) {
-                console.log("satıra kadar geldimmm");
                 //satırlarını eklemeye başla
                 _res.Satirlar.forEach(function (_satir) {
 
                     console.log("satır içinde dolaşıyorum" + JSON.stringify(_satir));
                     return f_SatirEkle(_res.Id, _satir);
                 });
+
                 return _res;
             })
             .fail(function () {
-                console.log("ihaleye satır ekleyemedim HATA ALINDI.!");
                 defer.reject("ihaleye satır ekleyemedim HATA ALINDI.!");
             })
             .then(function (_res) {
                 defer.resolve(_res);
             })
             .fail(function () {
-                console.log("f_IhaleKontrol HATA ALINDI.!");
                 defer.reject("f_IhaleKontrol HATA ALINDI.!");
             });
 
@@ -208,9 +206,9 @@ function SaglikBankDB() {
     }
 
     function f_KurumKontrol(kurum) {
-        var defer = Q.defer();
+        var defer = db.redis.dbQ.Q.defer();
 
-        result.db.kurum.f_db_kurum_ekle(kurum)
+        db.kurum.f_db_kurum_ekle(kurum)
             // Kurum ekle
             .then(function (_dbResults) {
                 console.log("kurum eklendi/vt deki bilgisi geri döndü");
@@ -225,7 +223,7 @@ function SaglikBankDB() {
     }
 
     function f_SatirEkle(_ihale_id, _satir) {
-        return result.db.kalem.f_db_kalem_ekle(_ihale_id, _satir)
+        return db.kalem.f_db_kalem_ekle(_ihale_id, _satir)
             .then(function (_dbSatir) {
                 console.log(_dbSatir);
                 var eklenenSatir = JSON.parse(_dbSatir);
@@ -236,10 +234,15 @@ function SaglikBankDB() {
             });
     }
 
+
+    /** @class SaglikBankDB */
+    result = {
+        f_DBIslemleri: f_DBIslemleri
+    };
+
     return result;
 }
 
-var saglikBankDB = SaglikBankDB();
-saglikBankDB.__proto__ = {db: require('../../server/db')()};
-
-exports.SaglikBankDB = saglikBankDB;
+/** @type {SaglikBankDB} */
+var saglikBank = SaglikBankDB();
+module.exports  = saglikBank;
