@@ -1,6 +1,6 @@
 {
   "name": "kuark-batch",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Kuark application's batch",
   "main": "index.js",
   "directories": {
@@ -66,8 +66,8 @@
     "watch": "0.17.1"
   },
   "dependencies": {
-    "kuark-db": "0.0.4",
-    "kuark-istisna": "0.0.7",
+    "kuark-db": "0.0.5",
+    "kuark-istisna": "0.0.8",
     "kuark-schema": "0.0.7",
     "mssql": "3.1.2",
     "mysql": "^2.10.2",
