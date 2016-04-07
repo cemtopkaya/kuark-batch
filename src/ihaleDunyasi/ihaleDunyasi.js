@@ -173,8 +173,8 @@ function ihaleDunyasi() {
         kurumIhaleDunyasi.Statu = kamu_kurumu_mu ? "Kamu" : "Özel";
         kurumIhaleDunyasi.UlkeAdi = "Türkiye";
         //kurumIhaleDunyasi.IlAdi = _elm.ilad;
-        kurumIhaleDunyasi.Sehir_Id = _sehir.Id;
-        kurumIhaleDunyasi.Bolge_Id = _bolge.Id;
+        kurumIhaleDunyasi.Sehir_Id = _sehir ? _sehir.Id : 0;
+        kurumIhaleDunyasi.Bolge_Id = _bolge ? _bolge.Id : 0;
 
         var db_kurum = schema.f_suz_klonla(schema.SABIT.SCHEMA.DB.KURUM, kurumIhaleDunyasi);
 

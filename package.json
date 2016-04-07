@@ -1,6 +1,6 @@
 {
   "name": "kuark-batch",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Kuark application's batch",
   "main": "index.js",
   "directories": {
@@ -28,7 +28,7 @@
     "build": "parallelshell 'npm run watch:test",
     "postbuild": "",
     "_______________________________________________________________ VERSION": "__________",
-    "preversion": "npm run mocha",
+    "preversion": "",
     "version": "git add -A && git commit -m\"Versiyon yapılacak\"",
     "postversion": "git push && git push --tags && npm publish && npm run update:all",
     "version:patch": "npm version patch  -m \" %s Versiyonu yapıldı\" --no-git-tag-version",
@@ -66,7 +66,7 @@
     "watch": "0.17.1"
   },
   "dependencies": {
-    "kuark-db": "0.0.5",
+    "kuark-db": "0.0.8",
     "kuark-istisna": "0.0.8",
     "kuark-schema": "0.0.7",
     "mssql": "3.1.2",
