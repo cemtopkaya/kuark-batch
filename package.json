@@ -1,6 +1,6 @@
 {
   "name": "kuark-batch",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "description": "Kuark application's batch",
   "main": "index.js",
   "directories": {
@@ -42,9 +42,9 @@
     "git:AC": "npm run git:add && npm run git:commit",
     "git:ACP": "npm run git:add && npm run git:commit && npm run git:push",
     "_______________________________________________________________ PUBLISH": "__________",
-    "prepublish": "",
-    "publish": "",
-    "postpublish": "",
+    "1prepublish": "",
+    "1publish": "",
+    "1postpublish": "",
     "_______________________________________________________________ UPDATE KUARK PACKAGES": "__________",
     "update:all": "npm run update-kuark-api && npm run update-kuark-app",
     "update-kuark-app": "ncu /^kuark-/ -u --packageFile ../../App/package.json && cd ../../App && npm update kuark-batch",
