@@ -1,6 +1,6 @@
 {
   "name": "kuark-batch",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "Kuark application's batch",
   "main": "index.js",
   "directories": {
@@ -28,7 +28,7 @@
     "build": "parallelshell 'npm run watch:test",
     "postbuild": "",
     "_______________________________________________________________ VERSION": "__________",
-    "preversion": "npm run mocha && ncu kuark-api kuark-batch kuark-db kuark-extensions kuark-istisna kuark-app",
+    "preversion": "npm run mocha",
     "version": "git add -A && git commit -m\"Versiyon yapılacak\"",
     "postversion": "git push && git push --tags && npm publish",
     "version:patch": "npm version patch  -m \" %s Versiyonu yapıldı\" --no-git-tag-version",
@@ -44,11 +44,11 @@
     "_______________________________________________________________ PUBLISH": "__________",
     "1prepublish": "",
     "1publish": "",
-    "1postpublish": "",
+    "postpublish": "npm run update:all:packagejson",
     "_______________________________________________________________ UPDATE KUARK PACKAGES": "__________",
-    "update:all": "npm run update-kuark-api && npm run update-kuark-app",
-    "update-kuark-app": "ncu /^kuark-/ -u --packageFile ../../App/package.json && cd ../../App && npm update kuark-batch",
-    "update-kuark-api": "ncu /^kuark-/ -u --packageFile ../kuark-api/package.json && cd ../kuark-api && npm update kuark-batch"
+    "update:all:packagejson": "npm run ncu:app && npm run ncu:api",
+    "ncu:app": "ncu /^kuark-/ -u --packageFile ../../App/package.json",
+    "ncu:api": "ncu /^kuark-/ -u --packageFile ../kuark-api/package.json"
   },
   "repository": {
     "type": "git",
@@ -66,11 +66,11 @@
     "watch": "0.17.1"
   },
   "dependencies": {
-    "cheerio": "^0.20.0",
     "kuark-db": "0.0.11",
-    "kuark-extensions": "0.0.28",
-    "kuark-istisna": "0.0.15",
-    "kuark-schema": "0.0.10",
+    "kuark-extensions": "0.0.35",
+    "kuark-istisna": "0.0.21",
+    "kuark-schema": "0.0.14",
+    "cheerio": "^0.20.0",
     "mysql": "^2.10.2",
     "node-uuid": "1.4.7",
     "q": "1.4.1",

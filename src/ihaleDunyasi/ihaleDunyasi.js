@@ -3,13 +3,13 @@
 var mysql = require('mysql'),
     $ = require('cheerio'),
     /** @type {DBModel} */
-    db = require('../../../kuark-db')(),
+    db = require('kuark-db')(),
     redis = db.redis,
     elastic = db.elastic,
     tabletojson = require('tabletojson'),
     exception = require("kuark-istisna"),
-    extensions = require("../../../kuark-extensions"),
-    schema = require('../../../kuark-schema');
+    extensions = require("kuark-extensions"),
+    schema = require('kuark-schema');
 
 
 /** @type {IhaleDunyasi} */
@@ -58,8 +58,6 @@ function ihaleDunyasi() {
      * ihale_id den sonraki son X ihaleyi çek
      * @param {integer} _ihale_id
      * @param {integer} [_topX=10] _topX
-     * @param {function} _successFn
-     * @param {function} _errFn
      */
     function f_ihaleDunyasindanCek(_ihale_id, _topX) {
         var defer = redis.dbQ.Q.defer();
@@ -241,8 +239,7 @@ function ihaleDunyasi() {
                 var basliklar = listeIhaleDunyasiJSON[0];
                 console.log(basliklar);
 
-                var _idx = 0,
-                    idxAciklama,
+                var idxAciklama,
                     idxSiraNo,
                     idxBirim,
                     idxMiktar,
@@ -258,15 +255,26 @@ function ihaleDunyasi() {
                         || th.toLowerCase().indexOf('adı') > -1
                         || th.toLowerCase().indexOf('adi') > -1
                         || th.toLowerCase().indexOf('zell') > -1
+                        || th.toLowerCase().indexOf('kalem') > -1
+                        || th.toLowerCase().indexOf('. kısım') > -1
+                        || th.toLowerCase().indexOf('. kisim') > -1
                         || th.toLowerCase().indexOf('mkys') > -1) {
                         idxAciklama = _prop;
-                    } else if (th.toLowerCase().indexOf('sıra') > -1 || th.toLowerCase().indexOf('sira') > -1 || th.toLowerCase().indexOf('sn') > -1) {
+                    }
+                    else if (th.toLowerCase().indexOf('sıra') > -1
+                        || th.toLowerCase().indexOf('sira') > -1
+                        || th.toLowerCase().indexOf('no') > -1
+                        || th.toLowerCase().indexOf('sn') > -1) {
                         idxSiraNo = _prop;
-                    } else if (th.toLowerCase().indexOf('birim') > -1 || th.toLowerCase().indexOf('bırım') > -1) {
+                    }
+                    else if (th.toLowerCase().indexOf('birim') > -1
+                        || th.toLowerCase().indexOf('bırım') > -1) {
                         idxBirim = _prop;
-                    } else if (th.toLowerCase().indexOf('ktar') > -1) {
+                    }
+                    else if (th.toLowerCase().indexOf('ktar') > -1) {
                         idxMiktar = _prop;
-                    } else if (th.toLowerCase().indexOf('bran') > -1) {
+                    }
+                    else if (th.toLowerCase().indexOf('bran') > -1) {
                         idxBransKodu = _prop;
                     }
                 }
@@ -313,14 +321,17 @@ function ihaleDunyasi() {
     function f_ihaleDunyasiIhalesiniKaydet(_elm) {
         var defer = redis.dbQ.Q.defer();
 
-        f_ihaleRedisteVarmi(_elm.ihale_id).then(function (_ihaleVarmi) {
+        f_ihaleRedisteVarmi(_elm.ihale_id)
+            .then(function (_ihaleVarmi) {
                 if (_ihaleVarmi === 0) {
-                    return f_ihaleIdsiniKaydet(_elm.ihale_id).then(function () {
+                    return f_ihaleIdsiniKaydet(_elm.ihale_id)
+                        .then(function () {
                         //bölge ve şehir kaydet
                         return redis.dbQ.Q.all([
                             f_sehir_ekle(_elm.ilad),
                             f_bolge_ekle(_elm.bolge)
-                        ]).then(function (_ress) {
+                        ])
+                            .then(function (_ress) {
                             return f_ihaleyiRediseKaydet(_elm, _ress[0], _ress[1])
                         });
                     });

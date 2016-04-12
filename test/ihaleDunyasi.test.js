@@ -15,6 +15,7 @@ describe('Ihale dünyasından veri çekilecek', function () {
     it.only('Son x adet ihale çek', function (done) {
 
         this.timeout = 6000;
+
         ihaleDunyasi.f_ihaleDunyasindanCekRediseEkle(0, 2)
             .then(function (_sonuc) {
                 done();
