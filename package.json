@@ -1,6 +1,6 @@
 {
   "name": "kuark-batch",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "Kuark application's batch",
   "main": "index.js",
   "directories": {
@@ -47,9 +47,9 @@
     "postpublish": "npm run update:all:packagejson",
     "_______________________________________________________________ UPDATE KUARK PACKAGES": "__________",
     "update:all:packagejson": "npm run ncu:app && npm run ncu:api",
-    "ncu:app": "ncu /^kuark-/ -u --packageFile ../../App/package.json",
-    "ncu:api": "ncu /^kuark-/ -u --packageFile ../kuark-api/package.json",
-    "u:all": "npm update kuark-api kuark-batch kuark-db kuark-extensions kuark-istisna kuark-app"
+    "ncu:app": "ncu kuark-batch -u --packageFile ../../App/package.json",
+    "ncu:api": "ncu kuark-batch -u --packageFile ../kuark-api/package.json",
+    "u:all": "npm update kuark-schema kuark-db kuark-extensions kuark-istisna"
   },
   "repository": {
     "type": "git",
@@ -69,9 +69,9 @@
   "dependencies": {
     "cheerio": "^0.20.0",
     "kuark-db": "0.0.11",
-    "kuark-extensions": "0.0.39",
-    "kuark-istisna": "0.0.25",
-    "kuark-schema": "0.0.18",
+    "kuark-extensions": "0.0.41",
+    "kuark-istisna": "0.0.27",
+    "kuark-schema": "0.0.20",
     "mysql": "^2.10.2",
     "node-uuid": "1.4.7",
     "q": "1.4.1",
