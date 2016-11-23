@@ -73,9 +73,9 @@
     "kuark-istisna": "0.0.27",
     "kuark-schema": "0.0.20",
     "mysql": "^2.10.2",
-    "node-uuid": "1.4.7",
     "q": "1.4.1",
     "redis": "2.5.3",
-    "tabletojson": "latest"
+    "tabletojson": "latest",
+    "uuid": "^3.0.0"
   }
 }
